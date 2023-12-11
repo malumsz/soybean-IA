@@ -35,35 +35,13 @@ def salvar_selecao():
         else:
             novo_caso.append(index-1)
 
-def salvar_caso(caso, nomes_casos_similares):
-    layout = [
-        [sg.Text("Selecione o nome do caso:")],
-        [sg.Combo(values=nomes_casos_similares, key="-CASE-NAME-")],
-        [sg.Button("Salvar", key="-SAVE-")],
-    ]
-
-    window = sg.Window("Salvar Caso no Banco", layout)
-
-    while True:
-        event, values = window.read()
-
-        if event == sg.WIN_CLOSED:
-            break
-
-        if event == "-SAVE-":
-            nome_caso = values["-CASE-NAME-"]
-            if nome_caso:
-                caso_banco = list(caso).copy()
-                caso_banco.insert(0, nome_caso)
-                crud.conectar()
-                crud.create(caso_banco)
-                crud.desconectar()
-                sg.popup("Caso salvo com sucesso!")
-                window.close()
-                break
-
-    window.close()
-
+def salvar_caso(caso, nome_caso):
+    caso_banco = caso.copy()
+    caso_banco.insert(0, nome_caso)   
+    crud.conectar()
+    crud.create(caso_banco)
+    crud.desconectar()
+    return True
 
 
 layout = [  # tela selecao de atributos
@@ -136,7 +114,7 @@ layout = [
     [
         sg.Table(
             values=[
-                [i + 1, todos_casos[case_index][1], f"{maiores_porcent[i]}%"]
+                [todos_casos[case_index][0], todos_casos[case_index][1], f"{maiores_porcent[i]}%"]
                 for i, case_index in enumerate(indices_maiores)
             ],
             headings=["ID", "Caso", "Porcentagem"],
@@ -165,11 +143,13 @@ layout = [
     #[sg.Button("Novo Caso", key="-NEW-CASE-"), sg.Button("Fechar", key="Fechar")],
 ]
 
+
 column_layout = [
     [sg.Column(layout, size=(600, 500), scrollable=True, vertical_scroll_only=True)]
 ]
 
 window = sg.Window("Casos Similares", column_layout, resizable=True)
+
 
 while True:
     event, values = window.read()
@@ -183,8 +163,8 @@ while True:
 
         casos_similares_selecionados = [caso[1] for caso in todos_casos]
 
-        values = []
-        for atributo, valor in zip(atributos, selected_similar_case[2:]):  # Começamos do índice 2 para evitar o ID e o nome do caso
+        values = [["ID", selected_similar_case[0]], ["Nome", selected_similar_case[1]]]
+        for atributo, valor in zip(atributos, selected_similar_case[2:]):
             try:
                 if valor is not None:
                     if isinstance(valor, int):
@@ -199,15 +179,17 @@ while True:
 
         window["-SELECTED-CASE-DETAILS-"].update(values=values)
 
+
     if event == "-SAVE-DB-SIMILAR-":
-        nomes_casos_similares = [todos_casos[case_index][1] for case_index in indices_maiores]
-        salvar_caso(list(selected_similar_case), nomes_casos_similares)
+        #nomes_casos_similares = [todos_casos[case_index][1] for case_index in indices_maiores]
+        salvar_caso(novo_caso, nomes_casos_similares)
 
 
     if event == "-NEW-CASE-":
         novo_caso.clear()
         window.close()
         window = sg.Window("Seleção de Atributos", column_layout)
+
 
     if event == "Fechar":
         break

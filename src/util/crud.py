@@ -40,19 +40,19 @@ class CRUD:
             self.desconectar()
 
     def create(self, caso):
-            caso.insert(0, len(self.read()) + 1)
-            self.conectar()
-            try:
-                # Crie uma string de placeholders para os valores
-                placeholders = ','.join(['%s'] * len(self.atributos))
+        caso.insert(0, len(self.read()) + 1)
+        self.conectar()
+        try:
+            # Crie uma string de placeholders para os valores
+            placeholders = ','.join(['%s'] * len(self.atributos))
 
-                # Construa a instrução SQL com placeholders para os valores
-                sql = f"INSERT INTO tabela_doenca ({','.join(self.atributos)}) VALUES ({placeholders})"
+            # Construa a instrução SQL com placeholders para os valores
+            sql = f"INSERT INTO tabela_doenca ({','.join(self.atributos)}) VALUES ({placeholders})"
 
-                # Execute a instrução SQL com os valores como argumentos separados
-                self.cursor.execute(sql, tuple(caso))
-                self.conexao.commit()
-            except psycopg2.Error as error:
-                print(f"Erro ao inserir dados no banco de dados: {error}")
-            finally:
-                self.desconectar()
+            # Execute a instrução SQL com os valores como argumentos separados
+            self.cursor.execute(sql, tuple(caso))
+            self.conexao.commit()
+        except psycopg2.Error as error:
+            print(f"Erro ao inserir dados no banco de dados: {error}")
+        finally:
+            self.desconectar()
