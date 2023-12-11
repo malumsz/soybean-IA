@@ -181,8 +181,7 @@ while True:
 
 
     if event == "-SAVE-DB-SIMILAR-":
-        #nomes_casos_similares = [todos_casos[case_index][1] for case_index in indices_maiores]
-        salvar_caso(novo_caso, nomes_casos_similares)
+        salvar_caso(novo_caso, selected_similar_case[1]) 
 
 
     if event == "-NEW-CASE-":
